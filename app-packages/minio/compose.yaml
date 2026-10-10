@@ -1,0 +1,18 @@
+services:
+  minio:
+    image: "${LOCALDOCK_MINIO_IMAGE:?必须提供已核验摘要的 MinIO 镜像}"
+    restart: unless-stopped
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: "${LOCALDOCK_MINIO_USER:?必须提供管理用户名}"
+      MINIO_ROOT_PASSWORD: "${LOCALDOCK_MINIO_PASSWORD:?必须提供加密生成的管理密码}"
+    ports:
+      - "127.0.0.1:${LOCALDOCK_MINIO_API_PORT:-9000}:9000"
+      - "127.0.0.1:${LOCALDOCK_MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio-data:/data
+    labels:
+      cn.localdock.managed: "true"
+      cn.localdock.package: "minio"
+volumes:
+  minio-data:

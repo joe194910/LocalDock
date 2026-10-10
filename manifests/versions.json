@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-09",
+  "policy": "下载前必须从官方来源重新核验 URL 与摘要；缺少摘要时禁止安装。",
+  "windowsTools": [
+    {
+      "id": "temurin-jdk",
+      "versions": ["17.0.20+8", "21.0.12+8"],
+      "source": "Eclipse Adoptium API",
+      "sha256Status": "构建发布前核验"
+    },
+    {
+      "id": "node",
+      "versions": ["22.20.0", "24.10.0"],
+      "source": "nodejs.org 发布归档",
+      "sha256Status": "构建发布前核验"
+    },
+    {
+      "id": "maven",
+      "versions": ["3.9.11"],
+      "source": "Apache Maven 官方发布",
+      "sha512Status": "构建发布前核验"
+    },
+    {
+      "id": "git",
+      "versions": ["2.56.0"],
+      "source": "Git for Windows 官方发布",
+      "sha256Status": "构建发布前核验"
+    }
+  ],
+  "containerImages": [
+    { "id": "mysql", "reference": "mysql:8.0.40", "digestStatus": "部署前必须解析并锁定" },
+    { "id": "redis", "reference": "redis:7.4.1-alpine", "digestStatus": "部署前必须解析并锁定" },
+    { "id": "minio", "reference": "minio/minio:RELEASE.2024-12-18T13-15-44Z", "digestStatus": "部署前必须解析并锁定" },
+    { "id": "qdrant", "reference": "qdrant/qdrant:v1.12.5", "digestStatus": "部署前必须解析并锁定" },
+    { "id": "jenkins", "reference": "jenkins/jenkins:2.479.3-lts-jdk17", "digestStatus": "部署前必须解析并锁定" }
+  ]
+}

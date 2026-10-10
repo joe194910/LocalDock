@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "minio",
+  "kind": "container_app",
+  "name": "MinIO",
+  "version": "RELEASE.2024-12-18T13-15-44Z",
+  "trustedSource": true,
+  "capabilities": ["compose", "panel", "connect", "open_browser"],
+  "imageVariable": "LOCALDOCK_MINIO_IMAGE",
+  "composeTemplate": "compose.yaml",
+  "probe": { "protocol": "http", "readOnly": true }
+}

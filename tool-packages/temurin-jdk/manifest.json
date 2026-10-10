@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "temurin-jdk",
+  "kind": "windows_tool",
+  "name": "Eclipse Temurin JDK",
+  "version": "17.0.20+8 / 21.0.12+8",
+  "trustedSource": true,
+  "capabilities": ["windows"]
+}

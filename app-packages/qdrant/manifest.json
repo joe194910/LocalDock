@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "qdrant",
+  "kind": "container_app",
+  "name": "Qdrant",
+  "version": "1.12.5",
+  "trustedSource": true,
+  "capabilities": ["compose", "panel", "connect", "open_browser"],
+  "imageVariable": "LOCALDOCK_QDRANT_IMAGE",
+  "composeTemplate": "compose.yaml",
+  "probe": { "protocol": "http", "readOnly": true }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://localdock.local/schemas/app-package.schema.json",
+  "title": "LocalDock 声明式应用包",
+  "type": "object",
+  "required": ["schemaVersion", "id", "kind", "name", "version", "trustedSource", "capabilities"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+    "kind": { "enum": ["windows_tool", "container_app"] },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "minLength": 1 },
+    "trustedSource": { "type": "boolean" },
+    "capabilities": {
+      "type": "array",
+      "items": { "enum": ["windows", "compose", "panel", "connect", "open_browser"] },
+      "uniqueItems": true
+    },
+    "imageVariable": { "type": "string" },
+    "composeTemplate": { "type": "string" },
+    "probe": {
+      "type": "object",
+      "properties": {
+        "protocol": { "enum": ["mysql", "redis", "http", "tcp"] },
+        "readOnly": { "type": "boolean" }
+      },
+      "required": ["protocol", "readOnly"],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

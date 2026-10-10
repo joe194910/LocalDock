@@ -1,0 +1,14 @@
+services:
+  qdrant:
+    image: "${LOCALDOCK_QDRANT_IMAGE:?必须提供已核验摘要的 Qdrant 镜像}"
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${LOCALDOCK_QDRANT_HTTP_PORT:-6333}:6333"
+      - "127.0.0.1:${LOCALDOCK_QDRANT_GRPC_PORT:-6334}:6334"
+    volumes:
+      - qdrant-data:/qdrant/storage
+    labels:
+      cn.localdock.managed: "true"
+      cn.localdock.package: "qdrant"
+volumes:
+  qdrant-data:

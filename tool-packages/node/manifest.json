@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "node",
+  "kind": "windows_tool",
+  "name": "Node.js",
+  "version": "22.20.0 / 24.10.0",
+  "trustedSource": true,
+  "capabilities": ["windows"]
+}

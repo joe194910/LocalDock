@@ -1,0 +1,14 @@
+services:
+  redis:
+    image: "${LOCALDOCK_REDIS_IMAGE:?必须提供已核验摘要的 Redis 镜像}"
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${LOCALDOCK_REDIS_PASSWORD}"]
+    ports:
+      - "127.0.0.1:${LOCALDOCK_REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    labels:
+      cn.localdock.managed: "true"
+      cn.localdock.package: "redis"
+volumes:
+  redis-data:

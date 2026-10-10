@@ -1,0 +1,18 @@
+services:
+  mysql:
+    image: "${LOCALDOCK_MYSQL_IMAGE:?必须提供已核验摘要的 MySQL 镜像}"
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "${LOCALDOCK_MYSQL_ROOT_PASSWORD:?必须提供加密生成的根密码}"
+      MYSQL_DATABASE: "${LOCALDOCK_MYSQL_DATABASE:-app}"
+      MYSQL_USER: "${LOCALDOCK_MYSQL_USER:-developer}"
+      MYSQL_PASSWORD: "${LOCALDOCK_MYSQL_PASSWORD:?必须提供加密生成的应用密码}"
+    ports:
+      - "127.0.0.1:${LOCALDOCK_MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    labels:
+      cn.localdock.managed: "true"
+      cn.localdock.package: "mysql"
+volumes:
+  mysql-data:

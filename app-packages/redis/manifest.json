@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "redis",
+  "kind": "container_app",
+  "name": "Redis",
+  "version": "7.4.1",
+  "trustedSource": true,
+  "capabilities": ["compose", "panel", "connect"],
+  "imageVariable": "LOCALDOCK_REDIS_IMAGE",
+  "composeTemplate": "compose.yaml",
+  "probe": { "protocol": "redis", "readOnly": true }
+}

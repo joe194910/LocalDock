@@ -1,0 +1,13 @@
+services:
+  jenkins:
+    image: "${LOCALDOCK_JENKINS_IMAGE:?必须提供已核验摘要的 Jenkins 镜像}"
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${LOCALDOCK_JENKINS_PORT:-8080}:8080"
+    volumes:
+      - jenkins-home:/var/jenkins_home
+    labels:
+      cn.localdock.managed: "true"
+      cn.localdock.package: "jenkins"
+volumes:
+  jenkins-home:

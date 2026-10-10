@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "mysql",
+  "kind": "container_app",
+  "name": "MySQL",
+  "version": "8.0.40",
+  "trustedSource": true,
+  "capabilities": ["compose", "panel", "connect"],
+  "imageVariable": "LOCALDOCK_MYSQL_IMAGE",
+  "composeTemplate": "compose.yaml",
+  "probe": { "protocol": "mysql", "readOnly": true }
+}

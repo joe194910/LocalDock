@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "git",
+  "kind": "windows_tool",
+  "name": "Git for Windows",
+  "version": "2.56.0",
+  "trustedSource": true,
+  "capabilities": ["windows"]
+}

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "jenkins",
+  "kind": "container_app",
+  "name": "Jenkins LTS",
+  "version": "2.479.3",
+  "trustedSource": true,
+  "capabilities": ["compose", "panel", "connect", "open_browser"],
+  "imageRepository": "jenkins/jenkins",
+  "imageTag": "2.479.3-lts-jdk17",
+  "imageVariable": "LOCALDOCK_JENKINS_IMAGE",
+  "composeTemplate": "compose.yaml",
+  "probe": { "protocol": "http", "readOnly": true }
+}

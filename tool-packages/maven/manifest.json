@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "maven",
+  "kind": "windows_tool",
+  "name": "Apache Maven",
+  "version": "3.9.11",
+  "trustedSource": true,
+  "capabilities": ["windows"]
+}
