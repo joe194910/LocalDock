@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type {
-  AppSettings, ConnectionDraft, ConnectionProbeResult, StorageLocations, WorkspaceSnapshot,
+  AppSettings, ConnectionDraft, ConnectionProbeResult, StorageLocations, UpdateCheckResult,
+  WorkspaceSnapshot,
 } from "./types";
 
 export const isTauriRuntime = () => "__TAURI_INTERNALS__" in window;
@@ -11,6 +12,14 @@ export async function loadWorkspace(): Promise<WorkspaceSnapshot> {
 
 export async function getAppVersion(): Promise<string> {
   return invoke<string>("get_app_version");
+}
+
+export async function checkForUpdates(): Promise<UpdateCheckResult> {
+  return invoke<UpdateCheckResult>("check_for_updates");
+}
+
+export async function openReleasesPage(): Promise<void> {
+  await invoke("open_releases_page");
 }
 
 export async function startPackageInstall(packageId: string): Promise<WorkspaceSnapshot> {

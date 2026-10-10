@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [ValidateSet('x64', 'arm64')]
     [string]$Architecture = 'x64'
@@ -8,6 +8,12 @@ $ErrorActionPreference = 'Stop'
 
 if (-not (Get-Command npm.cmd -ErrorAction SilentlyContinue)) {
     throw '未找到 npm.cmd，请先安装受支持的 Node.js LTS。'
+}
+if (-not (Get-Command cargo.exe -ErrorAction SilentlyContinue)) {
+    $cargoBin = Join-Path $env:USERPROFILE '.cargo\bin'
+    if (Test-Path (Join-Path $cargoBin 'cargo.exe')) {
+        $env:Path = "$cargoBin;$env:Path"
+    }
 }
 if (-not (Get-Command cargo.exe -ErrorAction SilentlyContinue)) {
     throw '未找到 Cargo，请先安装 Rust stable-msvc 工具链。'

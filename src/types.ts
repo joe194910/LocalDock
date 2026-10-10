@@ -114,6 +114,15 @@ export interface StorageLocations {
   logFile: string;
 }
 
+export interface UpdateCheckResult {
+  currentVersion: string;
+  latestVersion: string;
+  updateAvailable: boolean;
+  releaseName: string;
+  releaseUrl: string;
+  publishedAt?: string;
+}
+
 export interface ConnectionDraft {
   appId: ServiceRecord["appId"];
   name: string;

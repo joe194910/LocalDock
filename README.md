@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img alt="版本" src="https://img.shields.io/badge/version-0.1.7-0d6efd">
+  <img alt="版本" src="https://img.shields.io/badge/version-0.1.8-0d6efd">
   <img alt="平台" src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078d4">
   <img alt="Tauri" src="https://img.shields.io/badge/Tauri-2.0-24c8db">
   <img alt="React" src="https://img.shields.io/badge/React-18-149eca">
@@ -72,6 +72,7 @@ LocalDock 扫描 WSL 中的 Docker 容器，并分别展示管理来源、连接
 - 前端能力控制和 Rust 后端能力校验同时生效。
 - 外部连接和外部容器默认为只读资产，不会被 LocalDock 擅自启停。
 - 未完成协议鉴权时只报告 TCP 端口状态，不报告“已验证”或“健康”。
+- 设置页可从 GitHub Releases 检查真实最新版本，并打开官方发布页下载安装包。
 
 ## 运行要求
 

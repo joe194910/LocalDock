@@ -7,13 +7,13 @@ import {
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useEffect, useMemo, useState } from "react";
 import {
-  cancelTask, getAppSettings, getAppVersion, getJenkinsInitialPassword, getStorageLocations, isTauriRuntime, loadWorkspace,
-  openServiceEndpoint, openStorageDirectory, probeConnection, saveExternalConnection,
+  cancelTask, checkForUpdates, getAppSettings, getAppVersion, getJenkinsInitialPassword, getStorageLocations,
+  isTauriRuntime, loadWorkspace, openReleasesPage, openServiceEndpoint, openStorageDirectory, probeConnection, saveExternalConnection,
   scanLocalMachine, setDefaultDeploymentBackend, startPackageInstall, testConnection,
 } from "./api";
 import type {
   AppSettings, CatalogPackage, ConnectionDraft, ConnectionProbeResult, DeploymentTask,
-  ManagementKind, ServiceRecord, StorageLocations, ToolRecord, WorkspaceSnapshot,
+  ManagementKind, ServiceRecord, StorageLocations, ToolRecord, UpdateCheckResult, WorkspaceSnapshot,
 } from "./types";
 
 type PageKey = "overview" | "tools" | "services" | "catalog" | "tasks" | "logs" | "settings";
@@ -557,6 +557,23 @@ function SimplePage({
   onBackendChange: (backend: AppSettings["defaultDeploymentBackend"]) => void;
   onOpenStorage: (kind: "config" | "log") => void;
 }) {
+  const [updateResult, setUpdateResult] = useState<UpdateCheckResult>();
+  const [updateBusy, setUpdateBusy] = useState(false);
+  const [updateError, setUpdateError] = useState("");
+
+  const checkUpdate = async () => {
+    setUpdateBusy(true);
+    setUpdateError("");
+    try {
+      setUpdateResult(await checkForUpdates());
+    } catch (reason: unknown) {
+      setUpdateResult(undefined);
+      setUpdateError(`检查更新失败：${String(reason)}`);
+    } finally {
+      setUpdateBusy(false);
+    }
+  };
+
   if (page === "overview") return (
     <div className="page">
       <PageHeader title="本地开发工作台" subtitle="统计只来自桌面后端的真实资产。" />
@@ -594,9 +611,31 @@ function SimplePage({
           <Button onClick={() => onOpenStorage("log")} disabled={!runtimeReady || !storage}><FolderOpen size={16} /> 打开日志目录</Button>
         </div>
         <hr />
-        <div className="settings-version">
-          <span>LocalDock 版本</span>
-          <strong>{appVersion || "正在读取..."}</strong>
+        <div className="settings-update">
+          <div className="settings-update__header">
+            <div>
+              <span>LocalDock 版本</span>
+              <strong>{appVersion || "正在读取..."}</strong>
+            </div>
+            <Button onClick={checkUpdate} disabled={!runtimeReady || updateBusy} loading={updateBusy} loadingLabel="正在检查">
+              <RefreshCw size={16} /> {updateBusy ? "正在检查" : "检查更新"}
+            </Button>
+          </div>
+          {updateResult && (
+            <div className={`update-result ${updateResult.updateAvailable ? "update-result--available" : "update-result--latest"}`}>
+              <div>
+                <CheckCircle2 size={17} />
+                <span>
+                  <strong>{updateResult.updateAvailable ? `发现新版本 ${updateResult.latestVersion}` : "当前已是最新版本"}</strong>
+                  <small>{updateResult.releaseName || `LocalDock ${updateResult.latestVersion}`}</small>
+                </span>
+              </div>
+              <Button onClick={() => openReleasesPage().catch((reason: unknown) => setUpdateError(`打开发布页面失败：${String(reason)}`))}>
+                <ExternalLink size={16} /> 查看发布页
+              </Button>
+            </div>
+          )}
+          {updateError && <div className="update-result update-result--error"><Info size={17} /><span>{updateError}</span></div>}
         </div>
       </section>
     </div>

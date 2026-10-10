@@ -199,8 +199,18 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .storage-location { display: grid; grid-template-columns: 78px minmax(0, 1fr) auto; align-items: center; gap: 12px; }
 .storage-location > span { color: #46536e; font-size: 12px; font-weight: 650; }
 .storage-location code { min-width: 0; padding: 9px 11px; overflow-wrap: anywhere; word-break: break-all; color: #33415e; background: #f1f4f8; border-radius: 5px; font: 11px/1.5 Consolas, monospace; }
-.settings-version { display: flex; align-items: center; justify-content: space-between; gap: 16px; color: #46536e; font-size: 12px; }
-.settings-version strong { color: var(--blue); font-size: 13px; }
+.settings-update { display: grid; gap: 12px; }
+.settings-update__header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.settings-update__header > div { display: flex; align-items: center; gap: 12px; color: #46536e; font-size: 12px; }
+.settings-update__header strong { color: var(--blue); font-size: 13px; }
+.update-result { min-height: 54px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 14px; border: 1px solid #c7d6e8; border-radius: 6px; color: #46536e; background: #f5f8fc; font-size: 12px; }
+.update-result > div { min-width: 0; display: flex; align-items: center; gap: 9px; }
+.update-result span { min-width: 0; display: grid; gap: 3px; }
+.update-result strong { color: inherit; font-size: 12px; }
+.update-result small { overflow-wrap: anywhere; color: var(--muted); font-size: 11px; }
+.update-result--latest { color: #087541; border-color: #a9dfc0; background: #edf9f2; }
+.update-result--available { color: #0a5fc5; border-color: #acd0ff; background: #edf5ff; }
+.update-result--error { justify-content: flex-start; color: #9d2532; border-color: #f2b6bd; background: #fff0f2; }
 
 .modal-layer { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 30px; background: rgba(18, 31, 54, .4); }
 .modal { width: min(680px, 100%); max-height: calc(100vh - 60px); overflow: auto; border-radius: 8px; background: white; box-shadow: 0 22px 60px rgba(12, 32, 65, .24); }

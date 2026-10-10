@@ -206,6 +206,25 @@ struct StorageLocations {
     log_file: String,
 }
 
+#[derive(Deserialize)]
+struct GitHubRelease {
+    tag_name: String,
+    name: Option<String>,
+    html_url: String,
+    published_at: Option<String>,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+struct UpdateCheckResult {
+    current_version: String,
+    latest_version: String,
+    update_available: bool,
+    release_name: String,
+    release_url: String,
+    published_at: Option<String>,
+}
+
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct AssetDocument {
@@ -540,6 +559,38 @@ fn command_output(program: &str, arguments: &[&str]) -> Result<String, String> {
         });
     }
     Ok(decode_process_output(&output.stdout).trim().to_string())
+}
+
+fn parse_version(version: &str) -> Result<Vec<u32>, String> {
+    let trimmed = version.trim();
+    let normalized = trimmed
+        .strip_prefix('v')
+        .or_else(|| trimmed.strip_prefix('V'))
+        .unwrap_or(trimmed);
+    let core = normalized
+        .split(['-', '+'])
+        .next()
+        .ok_or_else(|| format!("版本号“{}”格式无效", version))?;
+    let parts = core
+        .split('.')
+        .map(|part| {
+            part.parse::<u32>()
+                .map_err(|_| format!("版本号“{}”格式无效", version))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    if parts.is_empty() {
+        return Err(format!("版本号“{}”格式无效", version));
+    }
+    Ok(parts)
+}
+
+fn is_newer_version(latest: &str, current: &str) -> Result<bool, String> {
+    let mut latest_parts = parse_version(latest)?;
+    let mut current_parts = parse_version(current)?;
+    let length = latest_parts.len().max(current_parts.len());
+    latest_parts.resize(length, 0);
+    current_parts.resize(length, 0);
+    Ok(latest_parts > current_parts)
 }
 
 fn scan_tool(id: &str, name: &str, executable: &str, version_args: &[&str]) -> ToolRecord {
@@ -1169,6 +1220,65 @@ fn get_app_version() -> String {
 }
 
 #[tauri::command]
+fn check_for_updates() -> Result<UpdateCheckResult, String> {
+    let current_version = env!("CARGO_PKG_VERSION").to_string();
+    let script = format!(
+        r#"$ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+$headers = @{{ 'User-Agent' = 'LocalDock/{}'; 'Accept' = 'application/vnd.github+json' }}
+try {{
+    $release = Invoke-RestMethod -UseBasicParsing -Headers $headers -Uri 'https://api.github.com/repos/joe194910/LocalDock/releases/latest' -TimeoutSec 15
+    $release | Select-Object tag_name,name,html_url,published_at | ConvertTo-Json -Compress
+}} catch {{
+    [Console]::Error.Write($_.Exception.Message)
+    exit 1
+}}"#,
+        current_version
+    );
+    let output = command_output(
+        "powershell.exe",
+        &[
+            "-NoLogo",
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-Command",
+            &script,
+        ],
+    )
+    .map_err(|error| format!("无法连接 GitHub 检查更新：{}", error))?;
+    let release: GitHubRelease = serde_json::from_str(&output)
+        .map_err(|error| format!("解析 GitHub 版本信息失败：{}", error))?;
+    let latest_version = release
+        .tag_name
+        .trim()
+        .trim_start_matches(['v', 'V'])
+        .to_string();
+    let update_available = is_newer_version(&latest_version, &current_version)?;
+    Ok(UpdateCheckResult {
+        current_version,
+        latest_version: latest_version.clone(),
+        update_available,
+        release_name: release
+            .name
+            .filter(|name| !name.trim().is_empty())
+            .unwrap_or_else(|| format!("LocalDock {}", latest_version)),
+        release_url: release.html_url,
+        published_at: release.published_at,
+    })
+}
+
+#[tauri::command]
+fn open_releases_page() -> Result<(), String> {
+    background_command("explorer.exe")
+        .arg("https://github.com/joe194910/LocalDock/releases")
+        .spawn()
+        .map_err(|error| format!("打开 GitHub 发布页面失败：{}", error))?;
+    Ok(())
+}
+
+#[tauri::command]
 fn start_package_install(package_id: String) -> Result<WorkspaceSnapshot, String> {
     if package_id != "jenkins" {
         return Err("当前版本只开放了 Jenkins 的真实独立 Compose 安装流程。".to_string());
@@ -1524,6 +1634,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             load_workspace,
             get_app_version,
+            check_for_updates,
+            open_releases_page,
             start_package_install,
             get_app_settings,
             set_default_deployment_backend,
@@ -1735,5 +1847,24 @@ mod tests {
         assert_eq!(service.container_id.as_deref(), Some("abcdef1234567890"));
         assert_eq!(service.compose_project.as_deref(), Some("localdock-jenkins"));
         assert!(service.capabilities.iter().any(|capability| capability == "restart"));
+    }
+
+    #[test]
+    fn 版本比较可以识别新版本() {
+        assert!(is_newer_version("0.1.8", "0.1.7").unwrap());
+        assert!(!is_newer_version("0.1.7", "0.1.8").unwrap());
+    }
+
+    #[test]
+    fn 版本比较支持_v_前缀和不同长度() {
+        assert!(is_newer_version("v1.2.1", "1.2").unwrap());
+        assert!(!is_newer_version("V1.2.0", "1.2").unwrap());
+    }
+
+    #[test]
+    fn 非法版本号会返回中文错误() {
+        let error = is_newer_version("latest", "0.1.7").unwrap_err();
+        assert!(error.contains("版本号"));
+        assert!(error.contains("格式无效"));
     }
 }

@@ -1,6 +1,6 @@
 [package]
 name = "localdock"
-version = "0.1.7"
+version = "0.1.8"
 description = "LocalDock Windows 本地开发工作台"
 authors = ["LocalDock"]
 edition = "2021"
